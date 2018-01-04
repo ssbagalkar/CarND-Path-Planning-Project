@@ -282,6 +282,20 @@ int main() {
               ptsy.push_back(ref_y);
             }
 
+            //In Frenet add evenly 30m spaced points ahead of the starting reference
+            vector<double> next_wp0 = getXY(car_s + 30,(2+4*lane),map_waypoints_s,map_waypoints_x,map_waypoints_y);
+            vector<double> next_wp1 = getXY(car_s + 60,(2+4*lane),map_waypoints_s,map_waypoints_x,map_waypoints_y);
+            vector<double> next_wp2 = getXY(car_s + 90,(2+4*lane),map_waypoints_s,map_waypoints_x,map_waypoints_y);
+
+
+            ptsx.push_back(next_wp0[0]);
+            ptsx.push_back(next_wp1[1]);
+            ptsx.push_back(next_wp2[0]);
+
+            ptsy.push_back(next_wp0[1]);
+            ptsy.push_back(next_wp1[1]);
+            ptsy.push_back(next_wp2[1]);
+
           	json msgJson;
 
           	vector<double> next_x_vals;
@@ -293,7 +307,7 @@ int main() {
             for(int i = 0; i < 50; i++)
             {
               double next_s = car_s + (i+1)*dist_inc;
-              double next_d = 6;
+              double next_d = 2+4*lane;
               vector<double> xy = getXY(next_s,next_d,map_waypoints_s,map_waypoints_x,map_waypoints_y);
               next_x_vals.push_back(xy[0]);
               next_y_vals.push_back(xy[1]);
