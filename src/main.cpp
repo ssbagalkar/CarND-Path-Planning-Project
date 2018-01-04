@@ -307,6 +307,14 @@ int main() {
               ptsy[i] = (shift_x *sin(0-ref_yaw)+shift_y*cos(0-ref_yaw));
             }
 
+          //create spline
+          tk::spline s;
+
+          //set (x,y) points to spline
+          s.set_points(ptsx,ptsy);
+
+          //Define the actual(x,y) points we will use for planner
+
           	json msgJson;
 
           	vector<double> next_x_vals;
