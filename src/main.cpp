@@ -272,6 +272,15 @@ int main() {
               }
             }
 
+            if ( too_close )
+            {
+              ref_vel -=.224;
+            }
+            else if(ref_vel < 49.5)
+            {
+              ref_vel +=.224;
+            }
+
             // Create list of widely spaced points
             vector <double> ptsx;
             vector <double> ptsy;
