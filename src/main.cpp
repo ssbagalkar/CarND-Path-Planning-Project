@@ -244,7 +244,7 @@ int main() {
             int prev_size = previous_path_x.size();
 
             // incorporate sensor fusion data to avoid collision
-            if(prev_size > 0);
+            if(prev_size > 0)
             {
               car_s = end_path_s;
             }
@@ -263,7 +263,7 @@ int main() {
                 double check_speed = sqrt(pow(vx,2)+pow(vy,2));
                 double check_car_s = sensor_fusion[i][5];
 
-                check_car_s+=(double)prev_size*0.02*check_speed;
+                check_car_s+=((double)prev_size*0.02*check_speed);
 
                 if ((check_car_s >  car_s ) && ((check_car_s-car_s)<30))
                 {
