@@ -268,6 +268,11 @@ int main() {
                 if ((check_car_s >  car_s ) && ((check_car_s-car_s)<30))
                 {
                   too_close = true;
+
+                  if(lane>0)
+                  {
+                    lane = 0;
+                  }
                 }
               }
             }
@@ -393,7 +398,7 @@ int main() {
           }
 
           	json msgJson;
-          
+
           	msgJson["next_x"] = next_x_vals;
           	msgJson["next_y"] = next_y_vals;
 
