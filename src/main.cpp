@@ -243,6 +243,35 @@ int main() {
             // define previous size
             int prev_size = previous_path_x.size();
 
+            // incorporate sensor fusion data to avoid collision
+            if(prev_size > 0);
+            {
+              car_s = end_path_s;
+            }
+
+            bool too_close = false;
+
+            // find ref_v to use
+            for (int i=0;i<sensor_fusion.size();i++)
+            {
+              //car is in my lane
+              float d =sensor_fusion[i][6];
+              if(d<(2+4*lane+2) && d > (2+4*lane-2))
+              {
+                double vx = sensor_fusion[i][3];
+                double vy = sensor_fusion[i][4];
+                double check_speed = sqrt(pow(vx,2)+pow(vy,2));
+                double check_car_s = sensor_fusion[i][5];
+
+                check_car_s+=(double)prev_size*0.02*check_speed;
+
+                if (check_car_s >  car_s ) && ((check_car_s-car_s)<30))
+                {
+                  ref_vel = 29.5;
+                }
+              }
+            }
+
             // Create list of widely spaced points
             vector <double> ptsx;
             vector <double> ptsy;
