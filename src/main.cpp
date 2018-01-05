@@ -270,8 +270,8 @@ int main() {
               ref_x = previous_path_x[prev_size-1];
               ref_y = previous_path_y[prev_size-1];
 
-              double ref_x_prev = previous_path_x[prev_size-1];
-              double ref_y_prev = previous_path_y[prev_size-1];
+              double ref_x_prev = previous_path_x[prev_size-2];
+              double ref_y_prev = previous_path_y[prev_size-2];
               ref_yaw = atan2(ref_y-ref_y_prev,ref_x-ref_x_prev);
 
               //Use the 2 points that make the path tangent to the previous path's end point
@@ -289,7 +289,7 @@ int main() {
 
 
             ptsx.push_back(next_wp0[0]);
-            ptsx.push_back(next_wp1[1]);
+            ptsx.push_back(next_wp1[0]);
             ptsx.push_back(next_wp2[0]);
 
             ptsy.push_back(next_wp0[1]);
@@ -308,10 +308,10 @@ int main() {
             }
 
           //create spline
-          tk::spline s;
+          tk::spline sp;
 
           //set (x,y) points to spline
-          s.set_points(ptsx,ptsy);
+          sp.set_points(ptsx,ptsy);
 
           //Define the actual(x,y) points we will use for planner
           vector<double> next_x_vals;
@@ -326,7 +326,7 @@ int main() {
 
           // Calculate how to break up spline points so that we travel at our desired reference velocity
           double target_x = 30.0;
-          double target_y = s(target_x);
+          double target_y = sp(target_x);
           double target_dist = sqrt(pow(target_x,2)+pow(target_y,2));
 
           double x_add_on = 0;
@@ -336,7 +336,7 @@ int main() {
           {
             double N= (target_dist/(0.02*ref_vel/2.24));
             double x_point = x_add_on+(target_x)/N;
-            double y_point=s(x_point);
+            double y_point=sp(x_point);
 
             x_add_on = x_point;
 
@@ -351,7 +351,7 @@ int main() {
             y_point += ref_y;
 
             next_x_vals.push_back(x_point);
-            next_y_vals.push_back(x_point);
+            next_y_vals.push_back(y_point);
           }
 
           	json msgJson;
