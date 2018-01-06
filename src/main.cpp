@@ -251,6 +251,7 @@ int main() {
 
             bool too_close = false;
             bool is_left_turn_safe= false;
+            bool dangerously_close = false;
 
             // find ref_v to use
             for (int i=0;i<sensor_fusion.size();i++)
@@ -270,6 +271,10 @@ int main() {
                 {
                   too_close = true;
 
+                  if (( check_car_s-car_s) < 10 )
+                  {
+                    dangerously_close = true ;
+                  }
                   if((lane>0) && (is_left_turn_safe))
                   {
                     lane = 0;
@@ -285,7 +290,7 @@ int main() {
                 double check_speed = sqrt(pow(vx,2)+pow(vy,2));
                 double check_car_s = sensor_fusion[i][5];
 
-                if (abs(check_car_s-car_s) > 20 )
+                if (abs(check_car_s-car_s) > 30 )
                 {
                   is_left_turn_safe = true;
                 }
@@ -295,8 +300,15 @@ int main() {
 
             if ( too_close )
             {
-              // reduce the velocity
-              ref_vel -=.224;
+              if ( dangerously_close)
+              {
+                ref_vel -= 2.0;
+              }
+              else
+              {
+                // reduce the velocity
+                ref_vel -=.224;
+              }
 
 
             }
