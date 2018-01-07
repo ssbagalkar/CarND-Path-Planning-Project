@@ -249,10 +249,16 @@ int main() {
               car_s = end_path_s;
             }
 
+            // Declare and initiate some flags
             bool too_close = false;
             bool is_left_turn_safe = false;
             bool is_right_turn_safe = false;
-            bool dangerously_close = false;
+
+            // Declare and initiate some limits
+            double max_vel_allowed = 49.5;
+            double max_acceleration = .224;
+
+          //
 
             // find ref_v to use
             for (int i=0;i<sensor_fusion.size();i++)
