@@ -203,7 +203,7 @@ int main() {
 
   int my_lane = 1;
   double ref_vel= 0;
-  h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy,&lane,&ref_vel](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
+  h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy,&my_lane,&ref_vel](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
@@ -261,94 +261,73 @@ int main() {
 
             // Let's loop through all cars in vicinity of our car and get their measurements
 
-            for (int i=0;i<sensor_fusion.size();i++)
-            {
+            for (int i=0;i<sensor_fusion.size();i++) {
 
-              float d =sensor_fusion[i][6];
-              if(d<(4) && d > (0))
-              {
+              float d = sensor_fusion[i][6];
+              if (d < (4) && d > (0)) {
                 lane_of_other_car = 0;
-              }
-
-              else if (( d < 8 ) && (d > 4))
-              {
-                lane_of_other_car = 1 ;
-              }
-              else if ( ( d < 12 ) && ( d > 8 ) )
-              {
+              } else if ((d < 8) && (d > 4)) {
+                lane_of_other_car = 1;
+              } else if ((d < 12) && (d > 8)) {
                 lane_of_other_car = 2;
               }
 
               // Now let's find each surrounding car's velocity,and its s
               double vx = sensor_fusion[i][3];
               double vy = sensor_fusion[i][4];
-              double check_speed = sqrt(pow(vx,2)+pow(vy,2));
+              double check_speed = sqrt(pow(vx, 2) + pow(vy, 2));
               double check_car_s = sensor_fusion[i][5];
 
-              check_car_s+=((double)prev_size*0.02*check_speed);
+              check_car_s += ((double) prev_size * 0.02 * check_speed);
 
               // Now check for all conditions if vicinity car is in right,left or ahead of us
 
               if (my_lane == lane_of_other_car)// surrounding car is in my lane
               {
-                if ((check_car_s >  car_s ) && ((check_car_s-car_s)<30))
-                {
+                if ((check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
                   too_close = true;
                 }
-              }
-
-              else if ( my_lane > lane_of_other_car)// Car is on left of my lane
+              } else if (my_lane > lane_of_other_car)// Car is on left of my lane
               {
-                if (abs(check_car_s-car_s) > 30)
-                {
-                  is_left_turn_safe = true ;
+                if (abs(check_car_s - car_s) > 30) {
+                  is_left_turn_safe = true;
+                }
+              } else if (my_lane < lane_of_other_car)// Car is on right of my lane
+              {
+                if (abs(check_car_s - car_s) > 30) {
+                  is_right_turn_safe = true;
                 }
               }
-
-              else if ( my_lane < lane_of_other_car)// Car is on right of my lane
-              {
-                if (abs(check_car_s-car_s) > 30)
-                {
-                  is_right_turn_safe = true ;
-                }
-              }
+            }
 
               double speed_diff = 0;
-              if (too_close)
-              {
-                if((is_left_turn_safe) && ( my_lane > 0))
-                {
-                  my_lane = my_lane - 1 ;
-                }
-                else if ((is_right_turn_safe) && (my_lane < 2))
-                {
-                  my_lane = my_lane + 1 ;
-                }
-
-                else
-                {
+              if (too_close) {
+                if ((is_left_turn_safe) && (my_lane > 0)) {
+                  my_lane = my_lane - 1;
+                } else if ((is_right_turn_safe) && (my_lane < 2)) {
+                  my_lane = my_lane + 1;
+                } else {
                   speed_diff -= max_acceleration;
                 }
 
-              }
-
-              // prefer center lane always
-              if (my_lane != 1) {
-                if ((my_lane == 0 )&&(is_right_turn_safe) || (my_lane==2) && (is_left_turn_safe) )
-                {
-                  my_lane = 1;
+              } else{
+                // prefer center lane always
+                if (my_lane != 1) {
+                  if ((my_lane == 0 )&&(is_right_turn_safe) || (my_lane==2) && (is_left_turn_safe) )
+                  {
+                    my_lane = 1;
+                  }
                 }
+
+                if (ref_vel < max_vel_allowed)
+                {
+                  speed_diff += max_acceleration ;
+                }
+
               }
 
-              if (ref_vel < max_vel_allowed)
-              {
-                speed_diff += max_acceleration ;
-              }
 
 
-
-
-            }
 
             // Create list of widely spaced points
             vector <double> ptsx;
@@ -390,9 +369,9 @@ int main() {
             }
 
             //In Frenet add evenly 30m spaced points ahead of the starting reference
-            vector<double> next_wp0 = getXY(car_s + 30,(2+4*lane),map_waypoints_s,map_waypoints_x,map_waypoints_y);
-            vector<double> next_wp1 = getXY(car_s + 60,(2+4*lane),map_waypoints_s,map_waypoints_x,map_waypoints_y);
-            vector<double> next_wp2 = getXY(car_s + 90,(2+4*lane),map_waypoints_s,map_waypoints_x,map_waypoints_y);
+            vector<double> next_wp0 = getXY(car_s + 30,(2+4*my_lane),map_waypoints_s,map_waypoints_x,map_waypoints_y);
+            vector<double> next_wp1 = getXY(car_s + 60,(2+4*my_lane),map_waypoints_s,map_waypoints_x,map_waypoints_y);
+            vector<double> next_wp2 = getXY(car_s + 90,(2+4*my_lane),map_waypoints_s,map_waypoints_x,map_waypoints_y);
 
 
             ptsx.push_back(next_wp0[0]);
@@ -441,7 +420,12 @@ int main() {
           // Fill up rest of our path planner after filling it with previous points,here we will always output 50 points
           for (int i=1;i<=50-previous_path_x.size();i++)
           {
-
+            ref_vel += speed_diff;
+            if ( ref_vel > max_vel_allowed ) {
+              ref_vel = max_vel_allowed;
+            } else if ( ref_vel < max_vel_allowed ) {
+              ref_vel = max_vel_allowed;
+            }
             double N= (target_dist/(0.02*ref_vel/2.24));
             double x_point = x_add_on+(target_x)/N;
             double y_point=sp(x_point);
