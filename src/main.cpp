@@ -313,7 +313,43 @@ int main() {
                 }
               }
 
-            
+              double speed_diff = 0;
+              if (too_close)
+              {
+                if((is_left_turn_safe) && ( my_lane > 0))
+                {
+                  my_lane = my_lane - 1 ;
+                }
+                else if ((is_right_turn_safe) && (my_lane < 2))
+                {
+                  my_lane = my_lane + 1 ;
+                }
+
+                else
+                {
+                  speed_diff -= max_acceleration;
+                }
+
+              }
+
+              // prefer center lane always
+              if (my_lane != 1) {
+                if ((my_lane == 0 )&&(is_right_turn_safe) || (my_lane==2) && (is_left_turn_safe) )
+                {
+                  my_lane = 1;
+                }
+              }
+
+              if (ref_vel < max_vel_allowed)
+              {
+                speed_diff += max_acceleration ;
+              }
+
+
+
+
+            }
+
             // Create list of widely spaced points
             vector <double> ptsx;
             vector <double> ptsy;
