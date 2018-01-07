@@ -250,7 +250,8 @@ int main() {
             }
 
             bool too_close = false;
-            bool is_left_turn_safe= false;
+            bool is_left_turn_safe = false;
+            bool is_right_turn_safe = false;
             bool dangerously_close = false;
 
             // find ref_v to use
@@ -267,22 +268,38 @@ int main() {
 
                 check_car_s+=((double)prev_size*0.02*check_speed);
 
-                if ((check_car_s >  car_s ) && ((check_car_s-car_s)<60))
+                if ((check_car_s >  car_s ) && ((check_car_s-car_s)<40))
                 {
                   too_close = true;
 
-                  if ((check_car_s >  car_s ) && ((check_car_s-car_s) < 30 ))
+                  if ((check_car_s >  car_s ) && ((check_car_s-car_s) < 20 ))
                   {
                     dangerously_close = true ;
                   }
-                  if((lane>0) && (is_left_turn_safe))
+                  if(lane>0) // if car is in lane 1 or 2
                   {
-                    lane = 0;
+                    if (is_left_turn_safe)//check if left turn is safe
+                      {
+                        lane = 0;
+                      }
+                    if ((lane == 1) && (is_right_turn_safe))//check if car is not in lane 1 and is
+                    {
+                      lane = 2;
+                    }
                   }
+                  else // if car is in lane 0
+                  {
+                    if (is_right_turn_safe)//check if right turn is safe
+                    {
+                      lane = 1;
+                    }
+                  }
+
                 }
               }
                 //Check if left turn is safe if  car is in middle lane
-              else if ( (d<4*lane) && (lane > 0) )
+                //Here we check the other car's d coordinate
+              else if ( (d<4) && (lane == 1) ) //if we are in lane 1 and check car on lane 0 position
               {
 
                 double vx = sensor_fusion[i][3];
@@ -290,19 +307,67 @@ int main() {
                 double check_speed = sqrt(pow(vx,2)+pow(vy,2));
                 double check_car_s = sensor_fusion[i][5];
 
-                if (abs(check_car_s-car_s) > 30 )
+                check_car_s+=((double)prev_size*0.02*check_speed);
+
+                if (abs(check_car_s-car_s) > 50 )
                 {
                   is_left_turn_safe = true;
                 }
 
               }
+
+              else if ( ( d < 12) && (d > 8) && ( lane==1 ) )
+              {
+                double vx = sensor_fusion[i][3];
+                double vy = sensor_fusion[i][4];
+                double check_speed = sqrt(pow(vx,2)+pow(vy,2));
+                double check_car_s = sensor_fusion[i][5];
+
+                check_car_s+=((double)prev_size*0.02*check_speed);
+
+                if ((check_car_s-car_s) > 30 )
+                {
+                  is_right_turn_safe = true;
+                }
+              }
+
+              else if ((lane == 0) && (d>4 ) && (d < 8))
+              {
+                double vx = sensor_fusion[i][3];
+                double vy = sensor_fusion[i][4];
+                double check_speed = sqrt(pow(vx,2)+pow(vy,2));
+                double check_car_s = sensor_fusion[i][5];
+
+                check_car_s+=((double)prev_size*0.02*check_speed);
+
+                if ((check_car_s-car_s) > 30 )
+                {
+                  is_right_turn_safe = true;
+                }
+              }
+
+              else if ((lane == 2) && (d>4 ) && (d < 8))
+              {
+                double vx = sensor_fusion[i][3];
+                double vy = sensor_fusion[i][4];
+                double check_speed = sqrt(pow(vx,2)+pow(vy,2));
+                double check_car_s = sensor_fusion[i][5];
+
+                check_car_s+=((double)prev_size*0.02*check_speed);
+
+                if ((check_car_s-car_s) > 30 )
+                {
+                  is_left_turn_safe = true;
+                }
+              }
+
             }
 
             if ( too_close )
             {
               if ( dangerously_close)
               {
-                ref_vel -= 2.00;
+                ref_vel -= 3.00;
               }
               else
               {
@@ -408,6 +473,7 @@ int main() {
           // Fill up rest of our path planner after filling it with previous points,here we will always output 50 points
           for (int i=1;i<=50-previous_path_x.size();i++)
           {
+
             double N= (target_dist/(0.02*ref_vel/2.24));
             double x_point = x_add_on+(target_x)/N;
             double y_point=sp(x_point);
