@@ -201,7 +201,7 @@ int main() {
   	map_waypoints_dy.push_back(d_y);
   }
 
-  int lane = 1;
+  int my_lane = 1;
   double ref_vel= 0;
   h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,&map_waypoints_dx,&map_waypoints_dy,&lane,&ref_vel](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
@@ -253,20 +253,33 @@ int main() {
             bool too_close = false;
             bool is_left_turn_safe = false;
             bool is_right_turn_safe = false;
+            int lane_of_other_car = -1;
 
             // Declare and initiate some limits
             double max_vel_allowed = 49.5;
             double max_acceleration = .224;
 
-          //
+            // Let's loop through all cars in vicinity of our car and get their measurements
 
-            // find ref_v to use
             for (int i=0;i<sensor_fusion.size();i++)
             {
-              //car is in my lane
+
               float d =sensor_fusion[i][6];
-              if(d<(2+4*lane+2) && d > (2+4*lane-2))
+              if(d<(4) && d > (0))
               {
+                lane_of_other_car = 0;
+              }
+
+              else if (( d < 8 ) && (d > 4))
+              {
+                lane_of_other_car = 1 ;
+              }
+              else if ( ( d < 12 ) && ( d > 8 ) )
+              {
+                lane_of_other_car = 2;
+              }
+
+              // Now let's find each surrounding car's velocity,and its s
                 double vx = sensor_fusion[i][3];
                 double vy = sensor_fusion[i][4];
                 double check_speed = sqrt(pow(vx,2)+pow(vy,2));
