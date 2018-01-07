@@ -280,21 +280,41 @@ int main() {
               }
 
               // Now let's find each surrounding car's velocity,and its s
-                double vx = sensor_fusion[i][3];
-                double vy = sensor_fusion[i][4];
-                double check_speed = sqrt(pow(vx,2)+pow(vy,2));
-                double check_car_s = sensor_fusion[i][5];
+              double vx = sensor_fusion[i][3];
+              double vy = sensor_fusion[i][4];
+              double check_speed = sqrt(pow(vx,2)+pow(vy,2));
+              double check_car_s = sensor_fusion[i][5];
 
-                check_car_s+=((double)prev_size*0.02*check_speed);
+              check_car_s+=((double)prev_size*0.02*check_speed);
 
-                if ((check_car_s >  car_s ) && ((check_car_s-car_s)<40))
+              // Now check for all conditions if vicinity car is in right,left or ahead of us
+
+              if (my_lane == lane_of_other_car)// surrounding car is in my lane
+              {
+                if ((check_car_s >  car_s ) && ((check_car_s-car_s)<30))
                 {
                   too_close = true;
+                }
+              }
 
-                  if ((check_car_s >  car_s ) && ((check_car_s-car_s) < 20 ))
-                  {
-                    dangerously_close = true ;
-                  }
+              else if ( my_lane > lane_of_other_car)// Car is on left of my lane
+              {
+                if (abs(check_car_s-car_s) > 30)
+                {
+                  is_left_turn_safe = true ;
+                }
+              }
+
+              else if ( my_lane < lane_of_other_car)// Car is on right of my lane
+              {
+                if (abs(check_car_s-car_s) > 30)
+                {
+                  is_right_turn_safe = true ;
+                }
+              }
+
+
+
                   if(lane>0) // if car is in lane 1 or 2
                   {
                     if (is_left_turn_safe)//check if left turn is safe
