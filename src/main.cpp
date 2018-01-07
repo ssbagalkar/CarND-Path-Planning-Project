@@ -230,7 +230,7 @@ int main() {
           	double car_yaw = j[1]["yaw"];
           	double car_speed = j[1]["speed"];
 
-          	// Previous path data given to the Planner
+          	// Previous path data given to the Planne
           	auto previous_path_x = j[1]["previous_path_x"];
           	auto previous_path_y = j[1]["previous_path_y"];
           	// Previous path's end s and d values 
@@ -256,7 +256,7 @@ int main() {
             int lane_of_other_car = -1;
 
             // Declare and initiate some limits
-            double max_vel_allowed = 49.5;
+            double max_velocity_allowed = 49.5;
             double max_acceleration = .224;
 
             // Let's loop through all cars in vicinity of our car and get their measurements
@@ -282,17 +282,17 @@ int main() {
 
               // Now check for all conditions if vicinity car is in right,left or ahead of us
 
-              if (my_lane == lane_of_other_car)// surrounding car is in my lane
+              if (my_lane == lane_of_other_car)// surrounding car is in my my_lane
               {
                 if ((check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
                   too_close = true;
                 }
-              } else if (my_lane > lane_of_other_car)// Car is on left of my lane
+              } else if (my_lane > lane_of_other_car)// Car is on left of my my_lane
               {
                 if (abs(check_car_s - car_s) > 30) {
                   is_left_turn_safe = true;
                 }
-              } else if (my_lane < lane_of_other_car)// Car is on right of my lane
+              } else if (my_lane < lane_of_other_car)// Car is on right of my my_lane
               {
                 if (abs(check_car_s - car_s) > 30) {
                   is_right_turn_safe = true;
@@ -311,7 +311,7 @@ int main() {
                 }
 
               } else{
-                // prefer center lane always
+                // prefer center my_lane always
                 if (my_lane != 1) {
                   if ((my_lane == 0 )&&(is_right_turn_safe) || (my_lane==2) && (is_left_turn_safe) )
                   {
@@ -319,7 +319,7 @@ int main() {
                   }
                 }
 
-                if (ref_vel < max_vel_allowed)
+                if (ref_vel < max_velocity_allowed)
                 {
                   speed_diff += max_acceleration ;
                 }
@@ -421,10 +421,10 @@ int main() {
           for (int i=1;i<=50-previous_path_x.size();i++)
           {
             ref_vel += speed_diff;
-            if ( ref_vel > max_vel_allowed ) {
-              ref_vel = max_vel_allowed;
-            } else if ( ref_vel < max_vel_allowed ) {
-              ref_vel = max_vel_allowed;
+            if ( ref_vel > max_velocity_allowed ) {
+              ref_vel = max_velocity_allowed;
+            } else if ( ref_vel < max_acceleration ) {
+              ref_vel = max_acceleration;
             }
             double N= (target_dist/(0.02*ref_vel/2.24));
             double x_point = x_add_on+(target_x)/N;
