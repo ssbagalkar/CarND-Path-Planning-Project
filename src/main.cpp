@@ -267,11 +267,11 @@ int main() {
 
                 check_car_s+=((double)prev_size*0.02*check_speed);
 
-                if ((check_car_s >  car_s ) && ((check_car_s-car_s)<30))
+                if ((check_car_s >  car_s ) && ((check_car_s-car_s)<60))
                 {
                   too_close = true;
 
-                  if (( check_car_s-car_s) < 10 )
+                  if ((check_car_s >  car_s ) && ((check_car_s-car_s) < 30 ))
                   {
                     dangerously_close = true ;
                   }
@@ -302,7 +302,7 @@ int main() {
             {
               if ( dangerously_close)
               {
-                ref_vel -= 2.0;
+                ref_vel -= 2.00;
               }
               else
               {
