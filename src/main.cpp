@@ -290,7 +290,7 @@ int main() {
               if ( lane_of_other_car == my_lane )
               {
                 // Car in our lane
-                too_close = check_car_s > car_s && check_car_s - car_s < 30;
+                too_close |= check_car_s > car_s && check_car_s - car_s < 30;
 
               }
               else if ( lane_of_other_car - my_lane == -1 )
