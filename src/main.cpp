@@ -258,6 +258,8 @@ int main() {
             // Declare and initiate some limits
             double max_velocity_allowed = 49.5;
             double max_acceleration = .224;
+
+            // vectors to keep track of each vehicle's  in adjoining lanes
             vector < bool > turn_left;
             vector < bool > turn_right ;
 
@@ -285,15 +287,20 @@ int main() {
 
               // Now check for all conditions if vicinity car is in right,left or ahead of us
 
-              if ( lane_of_other_car == my_lane ) {
+              if ( lane_of_other_car == my_lane )
+              {
                 // Car in our lane
                 too_close = check_car_s > car_s && check_car_s - car_s < 30;
 
-              } else if ( lane_of_other_car - my_lane == -1 ) {
+              }
+              else if ( lane_of_other_car - my_lane == -1 )
+              {
                 // Is it safe to take a left
                 is_left_turn_safe = abs(check_car_s-car_s) > 30;
                 turn_left.push_back(is_left_turn_safe);
-              } else if ( lane_of_other_car - my_lane == 1 ) {
+              }
+              else if ( lane_of_other_car - my_lane == 1 )
+              {
                 // Is it safe to take a right
                 is_right_turn_safe = abs(check_car_s-car_s)>30;
                 turn_right.push_back(is_right_turn_safe);
@@ -304,7 +311,7 @@ int main() {
             is_left_turn_safe = std::all_of(turn_left.begin(),turn_left.end(),[](int i) {return i==1;});
             is_right_turn_safe = std::all_of(turn_right.begin(),turn_right.end(),[](int i) {return i==1;});
 
-              double speed_diff = 0;
+              double trajectory_speed = 0;
               if (too_close)
               {
                 if ((is_left_turn_safe) && (my_lane > 0))
@@ -317,7 +324,7 @@ int main() {
                 }
                 else
                 {
-                  speed_diff -= max_acceleration;
+                  trajectory_speed -= max_acceleration;
                 }
 
               }
@@ -326,13 +333,10 @@ int main() {
 
                 if (ref_vel < max_velocity_allowed)
                 {
-                  speed_diff += max_acceleration ;
+                  trajectory_speed += max_acceleration ;
                 }
 
               }
-
-
-
 
             // Create list of widely spaced points
             vector <double> ptsx;
@@ -425,10 +429,13 @@ int main() {
           // Fill up rest of our path planner after filling it with previous points,here we will always output 50 points
           for (int i=1;i<=50-previous_path_x.size();i++)
           {
-            ref_vel += speed_diff;
-            if ( ref_vel > max_velocity_allowed ) {
+            ref_vel += trajectory_speed;
+            if ( ref_vel > max_velocity_allowed )
+            {
               ref_vel = max_velocity_allowed;
-            } else if ( ref_vel < max_acceleration ) {
+            }
+            else if ( ref_vel < max_acceleration )
+            {
               ref_vel = max_acceleration;
             }
             double N= (target_dist/(0.02*ref_vel/2.24));
