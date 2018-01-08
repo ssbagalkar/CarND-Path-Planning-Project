@@ -284,40 +284,63 @@ int main() {
 
               if (my_lane == lane_of_other_car)// surrounding car is in my my_lane
               {
-                if ((check_car_s > car_s) && ((check_car_s - car_s) < 30)) {
+                if ((check_car_s > car_s) && ((check_car_s - car_s) < 30))
+                {
                   too_close = true;
                 }
-              } else if (my_lane > lane_of_other_car)// Car is on left of my my_lane
+              }
+              else if (my_lane > lane_of_other_car)// Car is on left of my my_lane
               {
                 if (abs(check_car_s - car_s) > 30) {
                   is_left_turn_safe = true;
                 }
-              } else if (my_lane < lane_of_other_car)// Car is on right of my my_lane
+              }
+              else if (my_lane < lane_of_other_car)// Car is on right of my my_lane
               {
-                if (abs(check_car_s - car_s) > 30) {
+                if (abs(check_car_s - car_s) > 30)
+                {
                   is_right_turn_safe = true;
                 }
               }
             }
+//              if ( lane_of_other_car == my_lane ) {
+//                // Car in our my_lane.
+//                too_close |= check_car_s > car_s && check_car_s - car_s < 30;
+//              } else if ( lane_of_other_car - my_lane == -1 ) {
+//                // Car left
+//                is_left_turn_safe|= car_s - 30 < check_car_s && car_s + 30 > check_car_s;
+//              } else if ( lane_of_other_car - my_lane == 1 ) {
+//                // Car right
+//                is_right_turn_safe |= car_s - 30 < check_car_s && car_s + 30 > check_car_s;
+//              }
+//            }
 
               double speed_diff = 0;
-              if (too_close) {
-                if ((is_left_turn_safe) && (my_lane > 0)) {
+              if (too_close)
+              {
+                if ((is_left_turn_safe) && (my_lane > 0))
+                {
                   my_lane = my_lane - 1;
-                } else if ((is_right_turn_safe) && (my_lane < 2)) {
+                }
+                else if ((is_right_turn_safe) && (my_lane < 2))
+                {
                   my_lane = my_lane + 1;
-                } else {
+                }
+                else
+                {
                   speed_diff -= max_acceleration;
                 }
 
-              } else{
-                // prefer center my_lane always
-                if (my_lane != 1) {
-                  if ((my_lane == 0 )&&(is_right_turn_safe) || (my_lane==2) && (is_left_turn_safe) )
-                  {
-                    my_lane = 1;
-                  }
-                }
+              }
+              else
+              {
+//                // prefer center my_lane always
+//                if (my_lane != 1) {
+//                  if ((my_lane == 0 )&&(!is_right_turn_safe) || (my_lane==2) && (!is_left_turn_safe) )
+//                  {
+//                    my_lane = 1;
+//                  }
+//                }
 
                 if (ref_vel < max_velocity_allowed)
                 {
