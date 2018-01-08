@@ -261,6 +261,7 @@ int main() {
             vector < bool > turn_left;
             vector < bool > turn_right ;
 
+
           // Let's loop through all cars in vicinity of our car and get their measurements
 
             for (int i=0;i<sensor_fusion.size();i++) {
@@ -285,21 +286,24 @@ int main() {
               // Now check for all conditions if vicinity car is in right,left or ahead of us
 
               if ( lane_of_other_car == my_lane ) {
-                // Car in our my_lane.
-                too_close |= check_car_s > car_s && check_car_s - car_s < 30;
+                // Car in our lane
+                too_close = check_car_s > car_s && check_car_s - car_s < 30;
 
               } else if ( lane_of_other_car - my_lane == -1 ) {
-                // Car left
+                // Is it safe to take a left
                 is_left_turn_safe = abs(check_car_s-car_s) > 30;
                 turn_left.push_back(is_left_turn_safe);
               } else if ( lane_of_other_car - my_lane == 1 ) {
-                // Car right
+                // Is it safe to take a right
                 is_right_turn_safe = abs(check_car_s-car_s)>30;
                 turn_right.push_back(is_right_turn_safe);
               }
             }
+
+            // Check if all cars are at a safe distance to change lanes
             is_left_turn_safe = std::all_of(turn_left.begin(),turn_left.end(),[](int i) {return i==1;});
             is_right_turn_safe = std::all_of(turn_right.begin(),turn_right.end(),[](int i) {return i==1;});
+
               double speed_diff = 0;
               if (too_close)
               {
@@ -319,13 +323,6 @@ int main() {
               }
               else
               {
-//                // prefer center my_lane always
-//                if (my_lane != 1) {
-//                  if ((my_lane == 0 )&&(!is_right_turn_safe) || (my_lane==2) && (!is_left_turn_safe) )
-//                  {
-//                    my_lane = 1;
-//                  }
-//                }
 
                 if (ref_vel < max_velocity_allowed)
                 {
