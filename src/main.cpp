@@ -311,32 +311,32 @@ int main() {
             is_left_turn_safe = std::all_of(turn_left.begin(),turn_left.end(),[](int i) {return i==1;});
             is_right_turn_safe = std::all_of(turn_right.begin(),turn_right.end(),[](int i) {return i==1;});
 
-              double trajectory_speed = 0;
-              if (too_close)
+            double trajectory_speed = 0;
+            if (too_close)
+            {
+              if ((is_left_turn_safe) && (my_lane > 0))
               {
-                if ((is_left_turn_safe) && (my_lane > 0))
-                {
-                  my_lane = my_lane - 1;
-                }
-                else if ((is_right_turn_safe) && (my_lane < 2))
-                {
-                  my_lane = my_lane + 1;
-                }
-                else
-                {
-                  trajectory_speed -= max_acceleration;
-                }
-
+                my_lane = my_lane - 1;
+              }
+              else if ((is_right_turn_safe) && (my_lane < 2))
+              {
+                my_lane = my_lane + 1;
               }
               else
               {
-
-                if (ref_vel < max_velocity_allowed)
-                {
-                  trajectory_speed += max_acceleration ;
-                }
-
+                trajectory_speed -= max_acceleration;
               }
+
+            }
+            else
+            {
+
+              if (ref_vel < max_velocity_allowed)
+              {
+                trajectory_speed += max_acceleration ;
+              }
+
+            }
 
             // Create list of widely spaced points
             vector <double> ptsx;
