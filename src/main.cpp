@@ -258,8 +258,10 @@ int main() {
             // Declare and initiate some limits
             double max_velocity_allowed = 49.5;
             double max_acceleration = .224;
+            vector < bool > turn_left;
+            vector < bool > turn_right ;
 
-            // Let's loop through all cars in vicinity of our car and get their measurements
+          // Let's loop through all cars in vicinity of our car and get their measurements
 
             for (int i=0;i<sensor_fusion.size();i++) {
 
@@ -282,39 +284,22 @@ int main() {
 
               // Now check for all conditions if vicinity car is in right,left or ahead of us
 
-              if (my_lane == lane_of_other_car)// surrounding car is in my my_lane
-              {
-                if ((check_car_s > car_s) && ((check_car_s - car_s) < 30))
-                {
-                  too_close = true;
-                }
-              }
-              else if (my_lane > lane_of_other_car)// Car is on left of my my_lane
-              {
-                if (abs(check_car_s - car_s) > 30) {
-                  is_left_turn_safe = true;
-                }
-              }
-              else if (my_lane < lane_of_other_car)// Car is on right of my my_lane
-              {
-                if (abs(check_car_s - car_s) > 30)
-                {
-                  is_right_turn_safe = true;
-                }
+              if ( lane_of_other_car == my_lane ) {
+                // Car in our my_lane.
+                too_close |= check_car_s > car_s && check_car_s - car_s < 30;
+
+              } else if ( lane_of_other_car - my_lane == -1 ) {
+                // Car left
+                is_left_turn_safe = abs(check_car_s-car_s) > 30;
+                turn_left.push_back(is_left_turn_safe);
+              } else if ( lane_of_other_car - my_lane == 1 ) {
+                // Car right
+                is_right_turn_safe = abs(check_car_s-car_s)>30;
+                turn_right.push_back(is_right_turn_safe);
               }
             }
-//              if ( lane_of_other_car == my_lane ) {
-//                // Car in our my_lane.
-//                too_close |= check_car_s > car_s && check_car_s - car_s < 30;
-//              } else if ( lane_of_other_car - my_lane == -1 ) {
-//                // Car left
-//                is_left_turn_safe|= car_s - 30 < check_car_s && car_s + 30 > check_car_s;
-//              } else if ( lane_of_other_car - my_lane == 1 ) {
-//                // Car right
-//                is_right_turn_safe |= car_s - 30 < check_car_s && car_s + 30 > check_car_s;
-//              }
-//            }
-
+            is_left_turn_safe = std::all_of(turn_left.begin(),turn_left.end(),[](int i) {return i==1;});
+            is_right_turn_safe = std::all_of(turn_right.begin(),turn_right.end(),[](int i) {return i==1;});
               double speed_diff = 0;
               if (too_close)
               {
